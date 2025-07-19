@@ -39,7 +39,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     if(empty($username_err) && empty($new_password_err) && empty($confirm_password_err)){
         
         // Prepare a select statement to check if username exists
-        $sql = "SELECT id FROM users WHERE username = ?";
+        $sql = "SELECT user_id FROM users WHERE username = ?";
 
         if($stmt = mysqli_prepare($conn, $sql)){
             mysqli_stmt_bind_param($stmt, "s", $param_username);
@@ -54,7 +54,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     mysqli_stmt_bind_result($stmt, $user_id);
                     if(mysqli_stmt_fetch($stmt)){
                         // Username exists, proceed with updating the password
-                        $sql_update = "UPDATE users SET password = ? WHERE id = ?";
+                        $sql_update = "UPDATE users SET password_hash = ? WHERE user_id = ?";
 
                         if($stmt_update = mysqli_prepare($conn, $sql_update)){
                             mysqli_stmt_bind_param($stmt_update, "si", $param_password, $param_id);

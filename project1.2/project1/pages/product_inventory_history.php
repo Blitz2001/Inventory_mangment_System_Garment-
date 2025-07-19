@@ -191,7 +191,19 @@ $transactions = $conn->query("
                     <td><?php echo date('Y-m-d H:i', strtotime($row['created_at'])); ?></td>
                     <td>
                         <span class="transaction-type type-<?php echo $row['transaction_type']; ?>">
-                            <?php echo ucfirst($row['transaction_type']); ?>
+                            <?php
+                            // Hard code: if type is 'purchase' and reference_number is '0', show 'Manufactured'
+                            if (
+                                $row['transaction_type'] === 'purchase' &&
+                                (isset($row['reference_number']) && $row['reference_number'] === '0')
+                            ) {
+                                echo 'Manufactured';
+                            } elseif ($row['transaction_type'] === 'manufactured') {
+                                echo 'Manufactured';
+                            } else {
+                                echo ucfirst($row['transaction_type']);
+                            }
+                            ?>
                         </span>
                     </td>
                     <td class="<?php echo ($row['quantity'] > 0) ? 'quantity-positive' : 'quantity-negative'; ?>">

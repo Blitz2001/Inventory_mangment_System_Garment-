@@ -46,25 +46,21 @@ $orders_result = $orders_stmt->get_result();
 $all_orders = $orders_result->fetch_all(MYSQLI_ASSOC);
 $orders_stmt->close();
 
-// Fetch manufacturing orders for products this customer has ordered
+// Fetch manufacturing orders only for this customer using so_id link
 $manufacturing_orders_sql = "SELECT 
-                            mo.mo_id,
-                            mo.mo_number,
-                            p.name AS product_name,
-                            mo.quantity,
-                            mo.status,
-                            mo.start_date,
-                            mo.completion_date,
-                            mo.total_cost
-                          FROM manufacturing_orders mo
-                          JOIN products p ON mo.product_id = p.product_id
-                          WHERE mo.product_id IN (
-                              SELECT DISTINCT soi.product_id 
-                              FROM sales_order_items soi
-                              JOIN sales_orders so ON soi.so_id = so.so_id
-                              WHERE so.customer_id = ?
-                          )
-                          ORDER BY mo.start_date DESC";
+    mo.mo_id,
+    mo.mo_number,
+    p.name AS product_name,
+    mo.quantity,
+    mo.status,
+    mo.start_date,
+    mo.completion_date,
+    mo.total_cost
+FROM manufacturing_orders mo
+JOIN products p ON mo.product_id = p.product_id
+JOIN sales_orders so ON mo.so_id = so.so_id
+WHERE so.customer_id = ?
+ORDER BY mo.start_date DESC";
 $manufacturing_stmt = $conn->prepare($manufacturing_orders_sql);
 $manufacturing_stmt->bind_param("i", $customer_id);
 $manufacturing_stmt->execute();

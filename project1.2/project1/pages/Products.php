@@ -810,7 +810,7 @@ $result = $stmt->get_result();
             </div>
             
             <div class="form-group">
-                <label for="editReorderLevel">Reorder Level:</label>
+                <label for="editReorderLevel">Stock Level:</label>
                 <input type="number" id="editReorderLevel" name="reorder_level" required>
             </div>
             
@@ -885,7 +885,7 @@ $result = $stmt->get_result();
             </div>
             
             <div class="form-group">
-                <label for="createReorderLevel">Reorder Level:</label>
+                <label for="createReorderLevel">Stock Level:</label>
                 <input type="number" id="createReorderLevel" name="reorder_level" required>
             </div>
             

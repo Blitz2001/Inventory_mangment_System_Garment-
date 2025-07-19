@@ -17,11 +17,20 @@ while ($row = $prod_result->fetch_assoc()) {
     $products[$row['product_id']] = $row;
 }
 
+// Fetch open sales orders (optionally filter by customer in the future)
+$sales_orders = [];
+$sql = "SELECT so.so_id, so.order_number, so.status, c.name as customer_name FROM sales_orders so JOIN customers c ON so.customer_id = c.customer_id WHERE so.status IN ('confirmed', 'draft') ORDER BY so.order_date DESC";
+$result = $conn->query($sql);
+while ($row = $result->fetch_assoc()) {
+    $sales_orders[] = $row;
+}
+
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $product_id = (int)$_POST['product_id'];
     $quantity = (int)$_POST['quantity'];
     $notes = $_POST['notes'];
+    $so_id = isset($_POST['so_id']) ? (int)$_POST['so_id'] : null;
     
     // Validate
     if (empty($product_id)) {
@@ -30,6 +39,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($quantity <= 0) {
         $message = 'Quantity must be greater than 0';
         $messageType = 'error';
+    } elseif (empty($so_id)) {
+        $message = 'Sales Order is required';
+        $messageType = 'error';
     } else {
         try {
             $conn->begin_transaction();
@@ -37,12 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Generate MO number
             $mo_number = 'MO-' . date('Y') . '-' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
             
-            // Create manufacturing order
+            // Create manufacturing order with so_id
             $stmt = $conn->prepare("INSERT INTO manufacturing_orders 
-                                  (mo_number, product_id, quantity, status, notes, created_by) 
-                                  VALUES (?, ?, ?, 'planned', ?, ?)");
+                                  (mo_number, product_id, quantity, status, notes, created_by, so_id) 
+                                  VALUES (?, ?, ?, 'planned', ?, ?, ?)");
          
-            $stmt->bind_param("siisi", $mo_number, $product_id, $quantity, $notes, $user_id);
+            $stmt->bind_param("siisii", $mo_number, $product_id, $quantity, $notes, $user_id, $so_id);
             $stmt->execute();
             $mo_id = $conn->insert_id;
             $stmt->close();
@@ -95,10 +107,23 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $update_stmt->close();
             
             $conn->commit();
-            
+
+            // Fetch the MO number (ensure it is set)
+            $mo_stmt = $conn->prepare("SELECT mo_number FROM manufacturing_orders WHERE mo_id = ?");
+            $mo_stmt->bind_param("i", $mo_id);
+            $mo_stmt->execute();
+            $mo_stmt->bind_result($fetched_mo_number);
+            $mo_stmt->fetch();
+            $mo_stmt->close();
+
+            // If you want to immediately complete the MO after creation, do it here:
+            // $proc_stmt = $conn->prepare("CALL complete_manufacturing_order(?, ?)");
+            // $proc_stmt->bind_param("ii", $mo_id, $user_id);
+            // $proc_stmt->execute();
+            // $proc_stmt->close();
+
             $message = 'Manufacturing order created successfully!';
             $messageType = 'success';
-            
             // Redirect to details page
             header("Location: manufacturing_order_details.php?id=$mo_id");
             exit();
@@ -244,6 +269,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <?php endif; ?>
     
     <form method="POST" action="">
+        <div class="form-group">
+            <label for="so_id">Sales Order *</label>
+            <select id="so_id" name="so_id" required>
+                <option value="">-- Select Sales Order --</option>
+                <?php foreach ($sales_orders as $so): ?>
+                    <option value="<?php echo $so['so_id']; ?>">
+                        <?php echo htmlspecialchars($so['order_number'] . ' - ' . $so['customer_name'] . ' (' . ucfirst($so['status']) . ')'); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
         <div class="form-group">
             <label for="product_id">Product *</label>
             <select id="product_id" name="product_id" required>

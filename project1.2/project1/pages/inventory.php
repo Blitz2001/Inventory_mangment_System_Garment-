@@ -532,7 +532,7 @@ $result = $stmt->get_result();
     <div class="summary-card">
         <h3>Low Stock Items</h3>
         <div class="value"><?php echo $low_stock; ?></div>
-        <div class="label">Below reorder level</div>
+        <div class="label">Below stock level</div>
     </div>
     
     <div class="summary-card">
@@ -606,7 +606,7 @@ $result = $stmt->get_result();
             <th>On Hand</th>
             <th>Allocated</th>
             <th>Available</th>
-            <th>Reorder Level</th>
+            <th>Stock Level</th>
             <th>Status</th>
             <th>Actions</th>
         </tr>

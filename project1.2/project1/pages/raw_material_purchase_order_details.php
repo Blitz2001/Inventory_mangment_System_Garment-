@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $trans_stmt = $conn->prepare("INSERT INTO raw_material_transactions 
                                                 (material_id, transaction_type, quantity, reference_id, reference_number, created_by) 
                                                 VALUES (?, 'purchase', ?, ?, ?, ?)");
-                    $user_id = $_SESSION['user_id'];
+                    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 1; // Default to user_id 1 if not set
                     $trans_stmt->bind_param("idisi", $item['material_id'], $item['quantity'], $rmp_id, $rmp_data['rmp_number'], $user_id);
                     $trans_stmt->execute();
                     $trans_stmt->close();
@@ -389,7 +389,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container">
     <div class="print-header">
         <!-- <img src="../path/to/logo.png" alt="Logo" style="height:60px; margin-bottom:10px;"> -->
-        <h1 style="font-size:2.2em; letter-spacing:2px; margin-bottom:0; border-bottom:2px solid #333; padding-bottom:10px;"><?php echo htmlspecialchars($companyName); ?></h1>
+        <h1 style="font-size:2.2em; letter-spacing:2px; margin-bottom:0; border-bottom:2px solid #333; padding-bottom:10px;">MGS Garment</h1>
+        <div style="font-size: 1.1em; line-height: 1.5; margin-bottom: 8px;">
+            New town, Ambagasdowa.<br>
+            Telephone : +94712291358<br>
+            Email         : mgsgarment@gmail.com
+        </div>
         <div class="print-meta" style="margin-top:8px;">
             <span style="font-size:1.2em;"><strong>Raw Material Purchase Order</strong></span>
         </div>

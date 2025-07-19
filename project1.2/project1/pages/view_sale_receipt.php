@@ -154,7 +154,12 @@ $itemName = getItemName($conn, $sale['Item_ID']);
     <button class="btn-print" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
     <div class="print-header">
         <!-- <img src="../path/to/logo.png" alt="Logo" style="height:60px; margin-bottom:10px;"> -->
-        <h1><?php echo htmlspecialchars($companyName); ?></h1>
+        <h1 style="margin-bottom: 0;">MGS Garment</h1>
+        <div style="font-size: 1.1em; line-height: 1.5; margin-bottom: 8px;">
+            New town, Ambagasdowa.<br>
+            Telephone : +94712291358<br>
+            Email         : mgsgarment@gmail.com
+        </div>
         <div class="print-meta" style="margin-top:8px;">
             <span style="font-size:1.2em;"><strong>Sales Receipt</strong></span>
         </div>

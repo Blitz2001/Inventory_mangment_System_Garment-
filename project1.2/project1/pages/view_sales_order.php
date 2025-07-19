@@ -295,10 +295,11 @@ $items_stmt->close();
 <!-- Printable Receipt (hidden on screen, shown when printing) -->
 <div class="print-receipt">
     <div class="receipt-header">
-        <div class="company-name"><?php echo htmlspecialchars($companyName); ?></div>
+        <div class="company-name">MGS Garment</div>
         <div class="company-address">
-            123 Business Street, City<br>
-            Phone: (123) 456-7890 | Email: info@company.com
+            New town, Ambagasdowa.<br>
+            Telephone : +94712291358<br>
+            Email         : mgsgarment@gmail.com
         </div>
         <div class="document-title">SALES ORDER RECEIPT</div>
     </div>
@@ -525,6 +526,11 @@ function printReceipt() {
                     font-weight: bold;
                     margin-bottom: 5px;
                 }
+                .company-address {
+                    font-size: 14px;
+                    color: #555;
+                    margin-bottom: 10px;
+                }
                 .document-title {
                     font-size: 18px;
                     font-weight: bold;
@@ -580,7 +586,7 @@ function printReceipt() {
             </style>
         </head>
         <body>
-            ${printContent}
+            ${printContent.replace(/<div class=\"company-name\">.*?<\/div>\s*<div class=\"company-address\">.*?<\/div>/s, `<div class=\"company-name\">MGS Garment<\/div>\n<div class=\"company-address\">New town, Ambagasdowa.<br>Telephone : +94712291358<br>Email         : mgsgarment@gmail.com<\/div>`) }
             <script>
                 window.onload = function() {
                     window.print();

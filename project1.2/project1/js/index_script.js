@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const backBtn = document.querySelector('.back-btn');
         if (backBtn) {
             backBtn.addEventListener('click', () => {
-                window.location.href = 'Dashboard.php';
+                window.history.back();
             });
         }
     } catch (error) {
